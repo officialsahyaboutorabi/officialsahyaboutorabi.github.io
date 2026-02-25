@@ -1,181 +1,1176 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="description" content="A product of emergent.sh" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
-        <!--
-        manifest.json provides metadata used when your web app is installed on a
-        user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-        -->
-        <!--
-        Notice the use of %PUBLIC_URL% in the tags above.
-        It will be replaced with the URL of the `public` folder during the build.
-        Only files inside the `public` folder can be referenced from the HTML.
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a24;
+      --bg-card: #14141c;
+      --text-primary: #f0f0f5;
+      --text-secondary: #9090a0;
+      --text-muted: #606070;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --border-color: rgba(255, 255, 255, 0.06);
+      --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.1);
+    }
 
-        Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-        work correctly both with client-side routing and a non-root public URL.
-        Learn how to configure a non-root public URL by running `npm run build`.
-        -->
-        <title>Emergent | Fullstack App</title>
-        <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
-        <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
-        <!--
-        These two scripts have been added for the Visual Edits, please do not edit or remove them
-        -->
-        <script>
-            // Only load visual edit scripts when inside an iframe
-            if (window.self !== window.top) {
-                // Load debug monitor script
-                var debugMonitorScript = document.createElement('script');
-                debugMonitorScript.src = 'https://assets.emergent.sh/scripts/debug-monitor.js';
-                document.head.appendChild(debugMonitorScript);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-                // Configure Tailwind
-                window.tailwind = window.tailwind || {};
-                tailwind.config = {
-                    corePlugins: { preflight: false },
-                };
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-                // Load Tailwind CDN
-                var tailwindScript = document.createElement('script');
-                tailwindScript.src = 'https://cdn.tailwindcss.com';
-                document.head.appendChild(tailwindScript);
-            }
-        </script>
-    </head>
-    <body>
-        <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root"></div>
-        <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    /* Background gradient */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse at 20% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-        <a
-            id="emergent-badge"
-            target="_blank"
-            href="https://app.emergent.sh/?utm_source=emergent-badge"
-            style="
-                display: inline-flex !important;
-                box-sizing: border-box;
-                width: 178px;
-                height: 40px;
-                padding: 8px 12px 8px 12px;
-                align-items: center !important;
-                gap: 8px;
-                border-radius: 50px !important;
-                background: #000 !important;
-                position: fixed !important;
-                bottom: 16px;
-                right: 16px;
-                text-decoration: none;
-                font-family: -apple-system, BlinkMacSystemFont,
-                    &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell,
-                    &quot;Open Sans&quot;, &quot;Helvetica Neue&quot;,
-                    sans-serif !important;
-                font-size: 12px !important;
-                z-index: 9999 !important;
-            "
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M15.5702 8.13142C15.7729 8.0412 16.0007 8.18878 15.9892 8.4103C15.8374 11.3192 14.0965 14.0405 11.2531 15.3065C8.40964 16.5725 5.2224 16.0453 2.95912 14.2117C2.78676 14.072 2.82955 13.804 3.03219 13.7137L4.95677 12.8568C5.04866 12.8159 5.15446 12.823 5.24204 12.8725C6.73377 13.7153 8.59176 13.8649 10.2772 13.1145C11.9626 12.3641 13.0947 10.8833 13.4665 9.21075C13.4883 9.11256 13.5539 9.02918 13.6457 8.98827L15.5702 8.13142Z" fill="white"/>
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.3066 4.74698L15.5067 5.19653C15.5759 5.35178 15.5061 5.53366 15.3508 5.60278L1.29992 11.8586C1.14467 11.9278 0.962794 11.8579 0.893675 11.7027L0.701732 11.2716L0.693457 11.2531C-1.10317 7.21778 0.711626 2.49007 4.74692 0.693443C8.78221 -1.10318 13.51 0.711693 15.3066 4.74698ZM2.82356 8.55367C2.63552 8.63739 2.41991 8.51617 2.40853 8.31065C2.28373 6.05724 3.53858 3.85787 5.72286 2.88536C7.90715 1.91286 10.3813 2.45199 11.9724 4.05256C12.1175 4.19854 12.0633 4.43988 11.8753 4.5236L2.82356 8.55367Z" fill="white"/>
-            </svg>
-            <p
-                style="
-                    color: #FFF !important;
-                    font-family: 'Inter', sans-serif !important;
-                    font-size: 13px !important;
-                    font-style: normal !important;
-                    font-weight: 600 !important;
-                    line-height: 20px !important;
-                    margin: 0 !important;
-                    white-space: nowrap !important;
-                "
-            >
-                Made with Emergent
-            </p>
-        </a>
-        <script>
-            !(function (t, e) {
-                var o, n, p, r;
-                e.__SV ||
-                    ((window.posthog = e),
-                    (e._i = []),
-                    (e.init = function (i, s, a) {
-                        function g(t, e) {
-                            var o = e.split(".");
-                            2 == o.length && ((t = t[o[0]]), (e = o[1])),
-                                (t[e] = function () {
-                                    t.push(
-                                        [e].concat(
-                                            Array.prototype.slice.call(
-                                                arguments,
-                                                0,
-                                            ),
-                                        ),
-                                    );
-                                });
-                        }
-                        ((p = t.createElement("script")).type =
-                            "text/javascript"),
-                            (p.crossOrigin = "anonymous"),
-                            (p.async = !0),
-                            (p.src =
-                                s.api_host.replace(
-                                    ".i.posthog.com",
-                                    "-assets.i.posthog.com",
-                                ) + "/static/array.js"),
-                            (r =
-                                t.getElementsByTagName(
-                                    "script",
-                                )[0]).parentNode.insertBefore(p, r);
-                        var u = e;
-                        for (
-                            void 0 !== a ? (u = e[a] = []) : (a = "posthog"),
-                                u.people = u.people || [],
-                                u.toString = function (t) {
-                                    var e = "posthog";
-                                    return (
-                                        "posthog" !== a && (e += "." + a),
-                                        t || (e += " (stub)"),
-                                        e
-                                    );
-                                },
-                                u.people.toString = function () {
-                                    return u.toString(1) + ".people (stub)";
-                                },
-                                o =
-                                    "init me ws ys ps bs capture je Di ks register register_once register_for_session unregister unregister_for_session Ps getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Es $s createPersonProfile Is opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Ss debug xs getPageViewId captureTraceFeedback captureTraceMetric".split(
-                                        " ",
-                                    ),
-                                n = 0;
-                            n < o.length;
-                            n++
-                        )
-                            g(u, o[n]);
-                        e._i.push([i, s, a]);
-                    }),
-                    (e.__SV = 1));
-            })(document, window.posthog || []);
-            posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
-                api_host: "https://us.i.posthog.com",
-                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
-                session_recording: {
-                    recordCrossOriginIframes: true,
-                    capturePerformance: false,
-                },
-            });
-        </script>
-    </body>
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: var(--shadow-glow);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.5); }
+    }
+
+    .logo-text h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--accent-green);
+      font-weight: 500;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Search Section */
+    .search-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-soft);
+      transition: all 0.3s ease;
+    }
+
+    .search-section:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 16px 18px 16px 50px;
+      font-size: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-wrapper input::placeholder {
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .input-wrapper input:focus + i,
+    .input-wrapper:hover i {
+      color: var(--accent-blue);
+    }
+
+    .btn {
+      padding: 16px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: white;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .auto-refresh-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .auto-refresh-toggle span {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      cursor: pointer;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 100px;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--text-muted);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent-green);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+      left: 28px;
+      background: var(--accent-green);
+    }
+
+    .refresh-timer {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Tabs */
+    .tabs-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--bg-card);
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      width: fit-content;
+    }
+
+    .tab {
+      padding: 14px 28px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .tab:hover {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: white;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .tab-count {
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+
+    .tab.active .tab-count {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Panels */
+    .panel {
+      animation: fadeIn 0.4s ease;
+    }
+
+    .panel.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--bg-tertiary);
+    }
+
+    th {
+      padding: 18px 20px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      animation: rowSlideIn 0.4s ease backwards;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    @keyframes rowSlideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    td {
+      padding: 18px 20px;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .flight-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--accent-blue);
+      font-size: 15px;
+    }
+
+    .airline-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .airline-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-tertiary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .airport-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      padding: 6px 12px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .aircraft-reg {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: capitalize;
+    }
+
+    .status-scheduled,
+    .status-on-time,
+    .status-landed,
+    .status-arrived {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+    }
+
+    .status-delayed,
+    .status-late {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-yellow);
+    }
+
+    .status-cancelled,
+    .status-diverted {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+    }
+
+    .status-en-route,
+    .status-airborne,
+    .status-taxiing,
+    .status-boarding {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent-blue);
+    }
+
+    .status-unknown {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Ground Stats */
+    .ground-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Loading State */
+    .loading-container {
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 20px;
+      border: 3px solid var(--bg-tertiary);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: var(--bg-tertiary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--text-muted);
+    }
+
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .empty-text {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Initial State */
+    .initial-state {
+      padding: 100px 20px;
+      text-align: center;
+    }
+
+    .initial-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 32px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: var(--accent-blue);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .initial-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .initial-text {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Popular Airports */
+    .popular-airports {
+      margin-top: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .popular-btn {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .popular-btn:hover {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Error Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--accent-red);
+      border-radius: 14px;
+      color: var(--text-primary);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast i {
+      color: var(--accent-red);
+      font-size: 18px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .search-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .input-wrapper {
+        max-width: 100%;
+      }
+
+      .auto-refresh-toggle {
+        margin-left: 0;
+        justify-content: space-between;
+      }
+
+      .tabs-container {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .tab {
+        padding: 12px 20px;
+        white-space: nowrap;
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      th, td {
+        padding: 14px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <i class="fas fa-plane"></i>
+        </div>
+        <div class="logo-text">
+          <h1>Flight Board</h1>
+          <p>Real-time airport flight information</p>
+        </div>
+      </div>
+      <div class="live-indicator" id="liveIndicator" style="display: none;">
+        <span class="live-dot"></span>
+        <span>Live Data</span>
+        <span class="refresh-timer" id="refreshTimer"></span>
+      </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-row">
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="airportInput" 
+            placeholder="Enter IATA code"
+            maxlength="3"
+            autocomplete="off"
+          >
+          <i class="fas fa-search"></i>
+        </div>
+        <button class="btn btn-primary" onclick="loadAirport()">
+          <i class="fas fa-plane-departure"></i>
+          Load Airport
+        </button>
+        <div class="auto-refresh-toggle">
+          <span>Auto Refresh</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoRefreshToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <button class="tab active" data-panel="departures" onclick="switchTab(event, 'departures')">
+        <i class="fas fa-plane-departure"></i>
+        Departures
+        <span class="tab-count" id="departuresCount">0</span>
+      </button>
+      <button class="tab" data-panel="arrivals" onclick="switchTab(event, 'arrivals')">
+        <i class="fas fa-plane-arrival"></i>
+        Arrivals
+        <span class="tab-count" id="arrivalsCount">0</span>
+      </button>
+      <button class="tab" data-panel="ground" onclick="switchTab(event, 'ground')">
+        <i class="fas fa-parking"></i>
+        On Ground
+      </button>
+    </div>
+
+    <!-- Panels -->
+    <div id="departures" class="panel">
+      <div class="table-container">
+        <div class="initial-state" id="departuresInitial">
+          <div class="initial-icon">
+            <i class="fas fa-globe-americas"></i>
+          </div>
+          <h2 class="initial-title">Search for an Airport</h2>
+          <p class="initial-text">Enter a 3-letter IATA code above to view real-time departure information</p>
+          <div class="popular-airports">
+            <button class="popular-btn" onclick="quickLoad('JFK')">JFK</button>
+            <button class="popular-btn" onclick="quickLoad('LAX')">LAX</button>
+            <button class="popular-btn" onclick="quickLoad('LHR')">LHR</button>
+            <button class="popular-btn" onclick="quickLoad('SYD')">SYD</button>
+            <button class="popular-btn" onclick="quickLoad('DXB')">DXB</button>
+            <button class="popular-btn" onclick="quickLoad('SIN')">SIN</button>
+            <button class="popular-btn" onclick="quickLoad('NRT')">NRT</button>
+          </div>
+        </div>
+        <div id="departuresContent"></div>
+      </div>
+    </div>
+
+    <div id="arrivals" class="panel hidden">
+      <div class="table-container">
+        <div class="initial-state" id="arrivalsInitial">
+          <div class="initial-icon">
+            <i class="fas fa-globe-americas"></i>
+          </div>
+          <h2 class="initial-title">Search for an Airport</h2>
+          <p class="initial-text">Enter a 3-letter IATA code above to view real-time arrival information</p>
+        </div>
+        <div id="arrivalsContent"></div>
+      </div>
+    </div>
+
+    <div id="ground" class="panel hidden">
+      <div class="table-container">
+        <div class="initial-state" id="groundInitial">
+          <div class="initial-icon">
+            <i class="fas fa-globe-americas"></i>
+          </div>
+          <h2 class="initial-title">Search for an Airport</h2>
+          <p class="initial-text">Enter a 3-letter IATA code above to view aircraft currently on ground</p>
+        </div>
+        <div id="groundContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-exclamation-circle"></i>
+    <span id="toastMessage">Error occurred</span>
+  </div>
+
+  <script>
+    const API = "https://api.flightradar24.com/common/v1/airport.json";
+    let currentCode = null;
+    let refreshInterval = null;
+    let countdownInterval = null;
+    let countdown = 60;
+
+    // Initialize
+    document.getElementById('airportInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') loadAirport();
+    });
+
+    document.getElementById('autoRefreshToggle').addEventListener('change', (e) => {
+      if (e.target.checked && currentCode) {
+        startAutoRefresh();
+      } else {
+        stopAutoRefresh();
+      }
+    });
+
+    function switchTab(evt, panelId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      evt.target.closest('.tab').classList.add('active');
+
+      ['departures', 'arrivals', 'ground'].forEach(id =>
+        document.getElementById(id).classList.add('hidden')
+      );
+
+      document.getElementById(panelId).classList.remove('hidden');
+    }
+
+    function quickLoad(code) {
+      document.getElementById('airportInput').value = code;
+      loadAirport();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function showLoading(containerId) {
+      return `
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Loading flight data...</p>
+        </div>
+      `;
+    }
+
+    function showEmpty(message) {
+      return `
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-plane-slash"></i>
+          </div>
+          <h3 class="empty-title">No Flights Found</h3>
+          <p class="empty-text">${message}</p>
+        </div>
+      `;
+    }
+
+    function startAutoRefresh() {
+      stopAutoRefresh();
+      countdown = 60;
+      updateRefreshTimer();
+
+      countdownInterval = setInterval(() => {
+        countdown--;
+        updateRefreshTimer();
+        if (countdown <= 0) {
+          countdown = 60;
+          if (currentCode) loadAirportData(currentCode, false);
+        }
+      }, 1000);
+    }
+
+    function stopAutoRefresh() {
+      if (countdownInterval) clearInterval(countdownInterval);
+      document.getElementById('refreshTimer').textContent = '';
+    }
+
+    function updateRefreshTimer() {
+      document.getElementById('refreshTimer').textContent = `(${countdown}s)`;
+    }
+
+    async function loadAirport() {
+      const code = document.getElementById("airportInput").value.trim().toUpperCase();
+
+      if (code.length !== 3) {
+        showToast("Please enter a valid 3-letter IATA code");
+        return;
+      }
+
+      currentCode = code;
+      document.getElementById('liveIndicator').style.display = 'flex';
+
+      if (document.getElementById('autoRefreshToggle').checked) {
+        startAutoRefresh();
+      }
+
+      await loadAirportData(code, true);
+    }
+
+    async function loadAirportData(code, showLoadingState) {
+      // Hide initial states
+      document.getElementById('departuresInitial').style.display = 'none';
+      document.getElementById('arrivalsInitial').style.display = 'none';
+      document.getElementById('groundInitial').style.display = 'none';
+
+      if (showLoadingState) {
+        document.getElementById("departuresContent").innerHTML = showLoading();
+        document.getElementById("arrivalsContent").innerHTML = showLoading();
+        document.getElementById("groundContent").innerHTML = showLoading();
+      }
+
+      try {
+        await Promise.all([
+          loadDepartures(code),
+          loadArrivals(code),
+          loadGround(code)
+        ]);
+      } catch (err) {
+        console.error(err);
+        showToast("Request failed - likely CORS restriction from FlightRadar24");
+      }
+    }
+
+    async function loadDepartures(code) {
+      const url = `${API}?code=${code}&plugin[]=schedule&plugin-setting[schedule][mode]=departures`;
+      const res = await fetch(url);
+      const json = await res.json();
+
+      const flights =
+        json?.result?.response?.airport?.pluginData?.schedule?.departures?.data || [];
+
+      document.getElementById('departuresCount').textContent = flights.length;
+
+      document.getElementById("departuresContent").innerHTML =
+        flights.length ? buildTable(flights, "departure") : showEmpty("No departures scheduled at this time");
+    }
+
+    async function loadArrivals(code) {
+      const url = `${API}?code=${code}&plugin[]=schedule&plugin-setting[schedule][mode]=arrivals`;
+      const res = await fetch(url);
+      const json = await res.json();
+
+      const flights =
+        json?.result?.response?.airport?.pluginData?.schedule?.arrivals?.data || [];
+
+      document.getElementById('arrivalsCount').textContent = flights.length;
+
+      document.getElementById("arrivalsContent").innerHTML =
+        flights.length ? buildTable(flights, "arrival") : showEmpty("No arrivals scheduled at this time");
+    }
+
+    async function loadGround(code) {
+      const url = `${API}?code=${code}&plugin[]=schedule`;
+      const res = await fetch(url);
+      const json = await res.json();
+
+      const count = json?.result?.response?.airport?.pluginData?.aircraftCount;
+
+      if (!count) {
+        document.getElementById("groundContent").innerHTML = showEmpty("No ground data available");
+        return;
+      }
+
+      document.getElementById("groundContent").innerHTML = `
+        <div class="ground-stats">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-plane"></i>
+            </div>
+            <div class="stat-value">${count.onGround?.total || 0}</div>
+            <div class="stat-label">Total on Ground</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-eye"></i>
+            </div>
+            <div class="stat-value">${count.onGround?.visible || 0}</div>
+            <div class="stat-label">Visible Aircraft</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-parking"></i>
+            </div>
+            <div class="stat-value">${count.ground || 0}</div>
+            <div class="stat-label">Parked</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getStatusClass(status) {
+      const s = status.toLowerCase();
+      if (s.includes('scheduled') || s.includes('on time') || s.includes('landed') || s.includes('arrived')) {
+        return 'status-scheduled';
+      }
+      if (s.includes('delayed') || s.includes('late')) {
+        return 'status-delayed';
+      }
+      if (s.includes('cancelled') || s.includes('diverted')) {
+        return 'status-cancelled';
+      }
+      if (s.includes('en route') || s.includes('airborne') || s.includes('taxiing') || s.includes('boarding')) {
+        return 'status-en-route';
+      }
+      return 'status-unknown';
+    }
+
+    function buildTable(flights, type) {
+      const rows = flights.map((entry, index) => {
+        const f = entry.flight;
+
+        const flightNo =
+          f.identification?.number?.default ||
+          f.identification?.callsign ||
+          "—";
+
+        const airline =
+          f.airline?.short ||
+          f.airline?.name ||
+          f.owner?.name ||
+          "—";
+
+        const airlineCode = airline.substring(0, 2).toUpperCase();
+
+        const airport =
+          type === "arrival"
+            ? f.airport?.origin?.code?.iata
+            : f.airport?.destination?.code?.iata;
+
+        const aircraft = f.aircraft?.registration || "—";
+        const status = f.status?.text || "—";
+        const statusClass = getStatusClass(status);
+
+        return `<tr style="animation-delay: ${index * 0.05}s">
+          <td><span class="flight-number">${flightNo}</span></td>
+          <td>
+            <div class="airline-cell">
+              <div class="airline-logo">${airlineCode}</div>
+              <span>${airline}</span>
+            </div>
+          </td>
+          <td><span class="airport-code">${airport || "—"}</span></td>
+          <td><span class="aircraft-reg">${aircraft}</span></td>
+          <td>
+            <span class="status-badge ${statusClass}">
+              <span class="status-dot"></span>
+              ${status}
+            </span>
+          </td>
+        </tr>`;
+      }).join("");
+
+      return `
+        <table>
+          <thead>
+            <tr>
+              <th>Flight</th>
+              <th>Airline</th>
+              <th>${type === "arrival" ? "From" : "To"}</th>
+              <th>Aircraft</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+  </script>
+</body>
 </html>
