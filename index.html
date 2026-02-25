@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a24;
+      --bg-card: #14141c;
+      --text-primary: #f0f0f5;
+      --text-secondary: #9090a0;
+      --text-muted: #606070;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --border-color: rgba(255, 255, 255, 0.06);
+      --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-gradient {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(ellipse at 20% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-icon {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      box-shadow: var(--shadow-glow);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.5); }
+    }
+
+    .logo-text h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .live-indicator {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--accent-green);
+      font-weight: 500;
+    }
+
+    .live-indicator.visible { display: flex; }
+
+    .live-dot {
+      width: 8px; height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .refresh-timer {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Search Section */
+    .search-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-soft);
+      transition: all 0.3s ease;
+    }
+
+    .search-section:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 16px 18px 16px 50px;
+      font-size: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-wrapper input::placeholder {
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: none;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .input-wrapper:hover i,
+    .input-wrapper input:focus + i {
+      color: var(--accent-blue);
+    }
+
+    .btn {
+      padding: 16px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: white;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .auto-refresh-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .auto-refresh-toggle > span {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 52px; height: 28px;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 100px;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--text-muted);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent-green);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+      left: 28px;
+      background: var(--accent-green);
+    }
+
+    /* Tabs with sliding indicator */
+    .tabs-wrapper {
+      margin-bottom: 24px;
+    }
+
+    .tabs-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      background: var(--bg-card);
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .tab-slider {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      height: calc(100% - 12px);
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 12px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+      z-index: 0;
+    }
+
+    .tab {
+      padding: 14px 28px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color 0.3s ease;
+      font-family: inherit;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab:hover { color: var(--text-primary); }
+    .tab.active { color: white; }
+
+    .tab-count {
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    .tab.active .tab-count { background: rgba(255, 255, 255, 0.2); }
+
+    /* Panels with sliding animation */
+    .panels-container {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panels-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .panel {
+      min-width: 100%;
+      opacity: 0.5;
+      transform: scale(0.98);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .panel.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; }
+
+    thead { background: var(--bg-tertiary); }
+
+    th {
+      padding: 18px 20px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      animation: rowSlideIn 0.4s ease backwards;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(59, 130, 246, 0.05); }
+
+    @keyframes rowSlideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    td {
+      padding: 18px 20px;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .flight-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--accent-blue);
+      font-size: 15px;
+    }
+
+    .airline-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .airline-logo {
+      width: 36px; height: 36px;
+      background: var(--bg-tertiary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .airport-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      padding: 6px 12px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      font-size: 13px;
+      display: inline-block;
+    }
+
+    .aircraft-reg {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: capitalize;
+    }
+
+    .status-scheduled { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+    .status-delayed { background: rgba(245, 158, 11, 0.15); color: var(--accent-yellow); }
+    .status-cancelled { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+    .status-en-route { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+    .status-unknown { background: var(--bg-tertiary); color: var(--text-muted); }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Ground Stats */
+    .ground-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+    }
+
+    .stat-icon {
+      width: 48px; height: 48px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Loading State */
+    .loading-container {
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 48px; height: 48px;
+      margin: 0 auto 20px;
+      border: 3px solid var(--bg-tertiary);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text { color: var(--text-secondary); font-size: 14px; }
+
+    /* Empty State */
+    .empty-state {
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 80px; height: 80px;
+      margin: 0 auto 24px;
+      background: var(--bg-tertiary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--text-muted);
+    }
+
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .empty-text { color: var(--text-muted); font-size: 14px; }
+
+    /* Initial State */
+    .initial-state {
+      padding: 100px 20px;
+      text-align: center;
+    }
+
+    .initial-icon {
+      width: 100px; height: 100px;
+      margin: 0 auto 32px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: var(--accent-blue);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .initial-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .initial-text {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Popular Airports */
+    .popular-airports {
+      margin-top: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .popular-btn {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .popular-btn:hover {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--accent-red);
+      border-radius: 14px;
+      color: var(--text-primary);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 1000;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast i { color: var(--accent-red); font-size: 18px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 20px 16px; }
+      .header { flex-direction: column; align-items: flex-start; }
+      .search-row { flex-direction: column; align-items: stretch; }
+      .input-wrapper { max-width: 100%; }
+      .auto-refresh-toggle { margin-left: 0; justify-content: space-between; }
+      .tabs-container { width: 100%; overflow-x: auto; }
+      .tab { padding: 12px 16px; white-space: nowrap; font-size: 13px; }
+      table { font-size: 13px; }
+      th, td { padding: 14px 12px; }
+      .airline-cell { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .stat-card { padding: 20px; }
+      .stat-value { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-section">
+        <div class="logo-icon"><i class="fas fa-plane"></i></div>
+        <div class="logo-text">
+          <h1>Flight Board</h1>
+          <p>Real-time airport flight information</p>
+        </div>
+      </div>
+      <div class="live-indicator" id="liveIndicator">
+        <span class="live-dot"></span>
+        <span>Live Data</span>
+        <span class="refresh-timer" id="refreshTimer"></span>
+      </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-row">
+        <div class="input-wrapper">
+          <input type="text" id="airportInput" placeholder="Enter IATA code" maxlength="3" autocomplete="off">
+          <i class="fas fa-search"></i>
+        </div>
+        <button class="btn btn-primary" onclick="loadAirport()">
+          <i class="fas fa-plane-departure"></i>
+          Load Airport
+        </button>
+        <div class="auto-refresh-toggle">
+          <span>Auto Refresh</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoRefreshToggle" checked onchange="toggleAutoRefresh()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <div class="tabs-wrapper">
+      <div class="tabs-container" id="tabsContainer">
+        <div class="tab-slider" id="tabSlider"></div>
+        <button class="tab active" data-index="0" onclick="switchTab(0)">
+          <i class="fas fa-plane-departure"></i>
+          Departures
+          <span class="tab-count" id="departuresCount">0</span>
+        </button>
+        <button class="tab" data-index="1" onclick="switchTab(1)">
+          <i class="fas fa-plane-arrival"></i>
+          Arrivals
+          <span class="tab-count" id="arrivalsCount">0</span>
+        </button>
+        <button class="tab" data-index="2" onclick="switchTab(2)">
+          <i class="fas fa-parking"></i>
+          On Ground
+        </button>
+      </div>
+    </div>
+
+    <!-- Panels -->
+    <div class="panels-container">
+      <div class="panels-track" id="panelsTrack">
+        <!-- Departures Panel -->
+        <div class="panel active" id="departuresPanel">
+          <div class="table-container">
+            <div class="initial-state" id="departuresInitial">
+              <div class="initial-icon"><i class="fas fa-globe-americas"></i></div>
+              <h2 class="initial-title">Search for an Airport</h2>
+              <p class="initial-text">Enter a 3-letter IATA code above to view real-time departure information</p>
+              <div class="popular-airports">
+                <button class="popular-btn" onclick="quickLoad('JFK')">JFK</button>
+                <button class="popular-btn" onclick="quickLoad('LAX')">LAX</button>
+                <button class="popular-btn" onclick="quickLoad('LHR')">LHR</button>
+                <button class="popular-btn" onclick="quickLoad('SYD')">SYD</button>
+                <button class="popular-btn" onclick="quickLoad('DXB')">DXB</button>
+                <button class="popular-btn" onclick="quickLoad('SIN')">SIN</button>
+                <button class="popular-btn" onclick="quickLoad('NRT')">NRT</button>
+              </div>
+            </div>
+            <div id="departuresContent"></div>
+          </div>
+        </div>
+
+        <!-- Arrivals Panel -->
+        <div class="panel" id="arrivalsPanel">
+          <div class="table-container">
+            <div class="initial-state" id="arrivalsInitial">
+              <div class="initial-icon"><i class="fas fa-globe-americas"></i></div>
+              <h2 class="initial-title">Search for an Airport</h2>
+              <p class="initial-text">Enter a 3-letter IATA code above to view real-time arrival information</p>
+            </div>
+            <div id="arrivalsContent"></div>
+          </div>
+        </div>
+
+        <!-- Ground Panel -->
+        <div class="panel" id="groundPanel">
+          <div class="table-container">
+            <div class="initial-state" id="groundInitial">
+              <div class="initial-icon"><i class="fas fa-globe-americas"></i></div>
+              <h2 class="initial-title">Search for an Airport</h2>
+              <p class="initial-text">Enter a 3-letter IATA code above to view aircraft currently on ground</p>
+            </div>
+            <div id="groundContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <i class="fas fa-exclamation-circle"></i>
+    <span id="toastMessage">Error occurred</span>
+  </div>
+
+  <script>
+    const API = "https://api.flightradar24.com/common/v1/airport.json";
+    let currentCode = null;
+    let countdown = 60;
+    let countdownInterval = null;
+    let currentTab = 0;
+
+    // Initialize
+    document.getElementById('airportInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') loadAirport();
+    });
+
+    // Update slider position on load
+    updateSlider();
+
+    function updateSlider() {
+      const tabs = document.querySelectorAll('.tab');
+      const slider = document.getElementById('tabSlider');
+      const activeTab = tabs[currentTab];
+      
+      if (activeTab && slider) {
+        slider.style.width = activeTab.offsetWidth + 'px';
+        slider.style.left = (activeTab.offsetLeft) + 'px';
+      }
+    }
+
+    function switchTab(index) {
+      currentTab = index;
+      const tabs = document.querySelectorAll('.tab');
+      const panels = document.querySelectorAll('.panel');
+      const track = document.getElementById('panelsTrack');
+
+      // Update tabs
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+      });
+
+      // Update panels
+      panels.forEach((panel, i) => {
+        panel.classList.toggle('active', i === index);
+      });
+
+      // Slide the track
+      track.style.transform = `translateX(-${index * 100}%)`;
+
+      // Update slider
+      updateSlider();
+    }
+
+    function quickLoad(code) {
+      document.getElementById('airportInput').value = code;
+      loadAirport();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function showLoading() {
+      return `
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Loading flight data...</p>
+        </div>
+      `;
+    }
+
+    function showEmpty(message) {
+      return `
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-plane-slash"></i></div>
+          <h3 class="empty-title">No Flights Found</h3>
+          <p class="empty-text">${message}</p>
+        </div>
+      `;
+    }
+
+    function toggleAutoRefresh() {
+      const checked = document.getElementById('autoRefreshToggle').checked;
+      if (checked && currentCode) {
+        startAutoRefresh();
+      } else {
+        stopAutoRefresh();
+      }
+    }
+
+    function startAutoRefresh() {
+      stopAutoRefresh();
+      countdown = 60;
+      updateRefreshTimer();
+
+      countdownInterval = setInterval(() => {
+        countdown--;
+        updateRefreshTimer();
+        if (countdown <= 0) {
+          countdown = 60;
+          if (currentCode) loadAirportData(currentCode, false);
+        }
+      }, 1000);
+    }
+
+    function stopAutoRefresh() {
+      if (countdownInterval) clearInterval(countdownInterval);
+      document.getElementById('refreshTimer').textContent = '';
+    }
+
+    function updateRefreshTimer() {
+      document.getElementById('refreshTimer').textContent = `(${countdown}s)`;
+    }
+
+    async function loadAirport() {
+      const code = document.getElementById("airportInput").value.trim().toUpperCase();
+
+      if (code.length !== 3) {
+        showToast("Please enter a valid 3-letter IATA code");
+        return;
+      }
+
+      currentCode = code;
+      document.getElementById('liveIndicator').classList.add('visible');
+
+      if (document.getElementById('autoRefreshToggle').checked) {
+        startAutoRefresh();
+      }
+
+      await loadAirportData(code, true);
+    }
+
+    async function loadAirportData(code, showLoadingState) {
+      // Hide initial states
+      document.getElementById('departuresInitial').style.display = 'none';
+      document.getElementById('arrivalsInitial').style.display = 'none';
+      document.getElementById('groundInitial').style.display = 'none';
+
+      if (showLoadingState) {
+        document.getElementById("departuresContent").innerHTML = showLoading();
+        document.getElementById("arrivalsContent").innerHTML = showLoading();
+        document.getElementById("groundContent").innerHTML = showLoading();
+      }
+
+      try {
+        await Promise.all([
+          loadDepartures(code),
+          loadArrivals(code),
+          loadGround(code)
+        ]);
+      } catch (err) {
+        console.error(err);
+        showToast("Request failed - likely CORS restriction from FlightRadar24");
+      }
+    }
+
+    async function loadDepartures(code) {
+      const url = `${API}?code=${code}&plugin[]=schedule&plugin-setting[schedule][mode]=departures`;
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+        const flights = json?.result?.response?.airport?.pluginData?.schedule?.departures?.data || [];
+
+        document.getElementById('departuresCount').textContent = flights.length;
+        document.getElementById("departuresContent").innerHTML =
+          flights.length ? buildTable(flights, "departure") : showEmpty("No departures scheduled at this time");
+      } catch (e) {
+        document.getElementById("departuresContent").innerHTML = showEmpty("Failed to load departures");
+      }
+    }
+
+    async function loadArrivals(code) {
+      const url = `${API}?code=${code}&plugin[]=schedule&plugin-setting[schedule][mode]=arrivals`;
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+        const flights = json?.result?.response?.airport?.pluginData?.schedule?.arrivals?.data || [];
+
+        document.getElementById('arrivalsCount').textContent = flights.length;
+        document.getElementById("arrivalsContent").innerHTML =
+          flights.length ? buildTable(flights, "arrival") : showEmpty("No arrivals scheduled at this time");
+      } catch (e) {
+        document.getElementById("arrivalsContent").innerHTML = showEmpty("Failed to load arrivals");
+      }
+    }
+
+    async function loadGround(code) {
+      const url = `${API}?code=${code}&plugin[]=schedule`;
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+        const count = json?.result?.response?.airport?.pluginData?.aircraftCount;
+
+        if (!count) {
+          document.getElementById("groundContent").innerHTML = showEmpty("No ground data available");
+          return;
+        }
+
+        document.getElementById("groundContent").innerHTML = `
+          <div class="ground-stats">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fas fa-plane"></i></div>
+              <div class="stat-value">${count.onGround?.total || 0}</div>
+              <div class="stat-label">Total on Ground</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fas fa-eye"></i></div>
+              <div class="stat-value">${count.onGround?.visible || 0}</div>
+              <div class="stat-label">Visible Aircraft</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fas fa-parking"></i></div>
+              <div class="stat-value">${count.ground || 0}</div>
+              <div class="stat-label">Parked</div>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById("groundContent").innerHTML = showEmpty("Failed to load ground data");
+      }
+    }
+
+    function getStatusClass(status) {
+      const s = status.toLowerCase();
+      if (s.includes('scheduled') || s.includes('on time') || s.includes('landed') || s.includes('arrived')) {
+        return 'status-scheduled';
+      }
+      if (s.includes('delayed') || s.includes('late')) {
+        return 'status-delayed';
+      }
+      if (s.includes('cancelled') || s.includes('diverted')) {
+        return 'status-cancelled';
+      }
+      if (s.includes('en route') || s.includes('airborne') || s.includes('taxiing') || s.includes('boarding')) {
+        return 'status-en-route';
+      }
+      return 'status-unknown';
+    }
+
+    function buildTable(flights, type) {
+      const rows = flights.map((entry, index) => {
+        const f = entry.flight;
+        const flightNo = f.identification?.number?.default || f.identification?.callsign || "—";
+        const airline = f.airline?.short || f.airline?.name || f.owner?.name || "—";
+        const airlineCode = airline.substring(0, 2).toUpperCase();
+        const airport = type === "arrival" ? f.airport?.origin?.code?.iata : f.airport?.destination?.code?.iata;
+        const aircraft = f.aircraft?.registration || "—";
+        const status = f.status?.text || "—";
+        const statusClass = getStatusClass(status);
+
+        return `<tr style="animation-delay: ${index * 0.03}s">
+          <td><span class="flight-number">${flightNo}</span></td>
+          <td>
+            <div class="airline-cell">
+              <div class="airline-logo">${airlineCode}</div>
+              <span>${airline}</span>
+            </div>
+          </td>
+          <td><span class="airport-code">${airport || "—"}</span></td>
+          <td><span class="aircraft-reg">${aircraft}</span></td>
+          <td>
+            <span class="status-badge ${statusClass}">
+              <span class="status-dot"></span>
+              ${status}
+            </span>
+          </td>
+        </tr>`;
+      }).join("");
+
+      return `
+        <table>
+          <thead>
+            <tr>
+              <th>Flight</th>
+              <th>Airline</th>
+              <th>${type === "arrival" ? "From" : "To"}</th>
+              <th>Aircraft</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    // Handle window resize for slider
+    window.addEventListener('resize', updateSlider);
+  </script>
+</body>
+</html>
