@@ -1032,7 +1032,7 @@
       if (s.includes('delayed') || s.includes('late')) {
         return 'status-delayed';
       }
-      if (s.includes('cancelled') || (s.includes('canceled') || s.includes('diverted')) {
+      if (s.includes('cancelled') || s.includes('diverted')) {
         return 'status-cancelled';
       }
       if (s.includes('en route') || s.includes('airborne') || s.includes('taxiing') || s.includes('boarding')) {
